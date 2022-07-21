@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>SoulReader</title>
   
-  <subtitle>勤劳刻苦</subtitle>
+  <subtitle>加班狂魔</subtitle>
   <link href="https://fanghaimao.github.io/atom.xml" rel="self"/>
   
   <link href="https://fanghaimao.github.io/"/>
@@ -10,7 +10,7 @@
   <id>https://fanghaimao.github.io/</id>
   
   <author>
-    <name>lxx</name>
+    <name>mfh</name>
     
   </author>
   
