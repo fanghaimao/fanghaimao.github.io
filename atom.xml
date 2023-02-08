@@ -6,7 +6,7 @@
   <link href="https://fanghaimao.github.io/atom.xml" rel="self"/>
   
   <link href="https://fanghaimao.github.io/"/>
-  <updated>2023-02-07T01:37:32.249Z</updated>
+  <updated>2023-02-08T03:07:40.610Z</updated>
   <id>https://fanghaimao.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>JavaScript线程解释</title>
+    <link href="https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/"/>
+    <id>https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/</id>
+    <published>2023-02-08T02:42:20.000Z</published>
+    <updated>2023-02-08T03:07:40.610Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="JavaScript线程解释-Event-Loop-机制"><a href="#JavaScript线程解释-Event-Loop-机制" class="headerlink" title="JavaScript线程解释 Event Loop 机制"></a>JavaScript线程解释 Event Loop 机制</h4><!-- * `&&` 运算符的优先级高于 `||`, 而 `||` 的优先级高于 `? :`, `&&` `||` 是左关联， `? :` 是右关联 --><ul><li><p>js 怎么实现异步 ?</p><p>通过浏览器内核多线程实现异步。</p></li></ul><p>当我们启动浏览器的时候就启动了多个进程。 一个进程包含多个线程。</p><p> <img decoding="async" src="./../assets/img/explainImg/4842.png" ></p><p> 当然我们所要关心的是渲染进程，渲染进程是浏览器的核心进程。</p><ul><li><p>GUI 线程：负责渲染页面，解析 html、css；构建 DOM 树和渲染树</p></li><li><p>js 引擎线程： js 引擎线程负责解析和执行 js 程序，我们经常听到的 chrome 的 v8 引擎就是跑在 js 引擎线程上的，js 引擎线程只有一个，所有说 js 的单线程语言的原因，那其实语言没有单线程多线程之说，因为解释这个语言的是 的线程是单线程；js 引擎线程与 gui 线程互斥，当浏览器执行 javaScript 程序的时候，GUI 渲染线层会保存在一个队列当中；直到 js 程序执行完成，才会接着执行；如果 js 的执行时间过长，会影响页面的渲染不连贯，所有我们要尽量控制 js 的大小</p></li><li><p>定时触发线程：为什么 setTimeout 不阻塞后面程序的运行，那其实 setTimeout 不是由 js 引擎线程完成的，是由定时器触发线程完成的，所以它们可以是同时进行的，那么定时器触发线程在这定时任务完成之后会通知事件触发线程往任务队列里添加事件</p></li><li><p>事件触发线程：将满足触发条件的事件放入任务队列，一些异步的事件会放到异步队列中</p></li><li><p>异步 HTTP 请求线程：用与处理 ajax 请求的，当请求完成时如果有回调函数就通知事件触发线程往任务队列中添加任务</p></li></ul><h3 id="Event-Loop-机制"><a href="#Event-Loop-机制" class="headerlink" title="Event Loop 机制"></a>Event Loop 机制</h3><p>   &nbsp; &nbsp; Event Loop 是什么？</p><p>   &nbsp; &nbsp;<br>      Event Loop 是一个程序结构，用于等待和发送信息的事件。 简单说就是在程序中设置 2 个线程，一个负责程序本身的运行，称为“主线程”；另一个负责主线程和其他进程（主要是各种 I/O 操作）的通信 被称为“Event Loop 线程”（也可以翻译为消息线层）</p><h3 id="浏览器的-Event-Loop"><a href="#浏览器的-Event-Loop" class="headerlink" title="浏览器的 Event Loop"></a>浏览器的 Event Loop</h3><p> &nbsp; &nbsp;  宏观：浏览器多线程（从宏观来看是多线程实现了异步）</p><p> &nbsp; &nbsp;  微观：Event Loop，事件循环（Event Loop 翻译是事件循环，是实现异步的一种机制）</p><ul><li><p>有 3 个点要注意</p><p>&nbsp; &nbsp; 我们整个大的 script 的执行是全局任务也是一个宏任务的范畴，<br>当宏任务执行完，会去执行所有的微任务，<br>微任务全部执行完在去执行下一个宏任务，那什么时候去执行一个微任务呢，是等调用栈为空的时候， 调用栈不为空的时候，任务队列的微任务一直等待；微任务执行完又去取任务队列里的宏任务，去依次 执行宏任务，执行宏任务的时候就要检查当前有没有微任务，如果有微任务就去执行完所有微任务，然后 再去执行后续的宏任务</p><p>参考资料 <a href="https://senior-frontend.pages.dev/jsadvanced/asyncpro.html">https://senior-frontend.pages.dev/jsadvanced/asyncpro.html</a></p></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h4 id=&quot;JavaScript线程解释-Event-Loop-机制&quot;&gt;&lt;a href=&quot;#JavaScript线程解释-Event-Loop-机制&quot; class=&quot;headerlink&quot; title=&quot;JavaScript线程解释 Event Loop 机制&quot;&gt;&lt;/a&gt;Ja</summary>
+      
+    
+    
+    
+    
+    <category term="读后感" scheme="https://fanghaimao.github.io/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/"/>
+    
+  </entry>
   
   <entry>
     <title>前端提升网址推荐</title>

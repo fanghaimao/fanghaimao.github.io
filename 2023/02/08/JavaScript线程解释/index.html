@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>JavaScript线程解释 | SoulReader</title><meta name="keywords" content="读后感"><meta name="author" content="mfh"><meta name="copyright" content="mfh"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="JavaScript线程解释 Event Loop 机制  js 怎么实现异步 ? 通过浏览器内核多线程实现异步。   当我们启动浏览器的时候就启动了多个进程。 一个进程包含多个线程。    当然我们所要关心的是渲染进程，渲染进程是浏览器的核心进程。  GUI 线程：负责渲染页面，解析 html、css；构建 DOM 树和渲染树  js 引擎线程： js 引擎线程负责解析和执行 js 程序，我们经">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript线程解释">
+<meta property="og:url" content="https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/index.html">
+<meta property="og:site_name" content="SoulReader">
+<meta property="og:description" content="JavaScript线程解释 Event Loop 机制  js 怎么实现异步 ? 通过浏览器内核多线程实现异步。   当我们启动浏览器的时候就启动了多个进程。 一个进程包含多个线程。    当然我们所要关心的是渲染进程，渲染进程是浏览器的核心进程。  GUI 线程：负责渲染页面，解析 html、css；构建 DOM 树和渲染树  js 引擎线程： js 引擎线程负责解析和执行 js 程序，我们经">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://fanghaimao.github.io/assets/cover/logo.png">
+<meta property="article:published_time" content="2023-02-08T02:42:20.000Z">
+<meta property="article:modified_time" content="2023-02-08T03:07:40.610Z">
+<meta property="article:author" content="mfh">
+<meta property="article:tag" content="读后感">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fanghaimao.github.io/assets/cover/logo.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'JavaScript线程解释',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-02-08 11:07:40'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="SoulReader" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/image/header_avatar.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> Joy</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Photo</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/assets/cover/logo.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">SoulReader</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> Joy</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-image"></i><span> Photo</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">JavaScript线程解释</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-02-08T02:42:20.000Z" title="Created 2023-02-08 10:42:20">2023-02-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-02-08T03:07:40.610Z" title="Updated 2023-02-08 11:07:40">2023-02-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="JavaScript线程解释"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h4 id="JavaScript线程解释-Event-Loop-机制"><a href="#JavaScript线程解释-Event-Loop-机制" class="headerlink" title="JavaScript线程解释 Event Loop 机制"></a>JavaScript线程解释 Event Loop 机制</h4><!-- * `&&` 运算符的优先级高于 `||`, 而 `||` 的优先级高于 `? :`, `&&` `||` 是左关联， `? :` 是右关联
+ -->
+<ul>
+<li><p>js 怎么实现异步 ?</p>
+<p>通过浏览器内核多线程实现异步。</p>
+</li>
+</ul>
+<p>当我们启动浏览器的时候就启动了多个进程。 一个进程包含多个线程。</p>
+<p> <img decoding="async" src="./../assets/img/explainImg/4842.png" ></p>
+<p> 当然我们所要关心的是渲染进程，渲染进程是浏览器的核心进程。</p>
+<ul>
+<li><p>GUI 线程：负责渲染页面，解析 html、css；构建 DOM 树和渲染树</p>
+</li>
+<li><p>js 引擎线程： js 引擎线程负责解析和执行 js 程序，我们经常听到的 chrome 的 v8 引擎就是跑在 js 引擎线程上的，js 引擎线程只有一个，所有说 js 的单线程语言的原因，那其实语言没有单线程多线程之说，因为解释这个语言的是 的线程是单线程；js 引擎线程与 gui 线程互斥，当浏览器执行 javaScript 程序的时候，GUI 渲染线层会保存在一个队列当中；直到 js 程序执行完成，才会接着执行；如果 js 的执行时间过长，会影响页面的渲染不连贯，所有我们要尽量控制 js 的大小</p>
+</li>
+<li><p>定时触发线程：为什么 setTimeout 不阻塞后面程序的运行，那其实 setTimeout 不是由 js 引擎线程完成的，是由定时器触发线程完成的，所以它们可以是同时进行的，那么定时器触发线程在这定时任务完成之后会通知事件触发线程往任务队列里添加事件</p>
+</li>
+<li><p>事件触发线程：将满足触发条件的事件放入任务队列，一些异步的事件会放到异步队列中</p>
+</li>
+<li><p>异步 HTTP 请求线程：用与处理 ajax 请求的，当请求完成时如果有回调函数就通知事件触发线程往任务队列中添加任务</p>
+</li>
+</ul>
+<h3 id="Event-Loop-机制"><a href="#Event-Loop-机制" class="headerlink" title="Event Loop 机制"></a>Event Loop 机制</h3><p>   &nbsp; &nbsp; Event Loop 是什么？</p>
+<p>   &nbsp; &nbsp;<br>      Event Loop 是一个程序结构，用于等待和发送信息的事件。 简单说就是在程序中设置 2 个线程，一个负责程序本身的运行，称为“主线程”；另一个负责主线程和其他进程（主要是各种 I/O 操作）的通信 被称为“Event Loop 线程”（也可以翻译为消息线层）</p>
+<h3 id="浏览器的-Event-Loop"><a href="#浏览器的-Event-Loop" class="headerlink" title="浏览器的 Event Loop"></a>浏览器的 Event Loop</h3><p> &nbsp; &nbsp;  宏观：浏览器多线程（从宏观来看是多线程实现了异步）</p>
+<p> &nbsp; &nbsp;  微观：Event Loop，事件循环（Event Loop 翻译是事件循环，是实现异步的一种机制）</p>
+<ul>
+<li><p>有 3 个点要注意</p>
+<p>&nbsp; &nbsp; 我们整个大的 script 的执行是全局任务也是一个宏任务的范畴，<br>当宏任务执行完，会去执行所有的微任务，<br>微任务全部执行完在去执行下一个宏任务，那什么时候去执行一个微任务呢，是等调用栈为空的时候， 调用栈不为空的时候，任务队列的微任务一直等待；微任务执行完又去取任务队列里的宏任务，去依次 执行宏任务，执行宏任务的时候就要检查当前有没有微任务，如果有微任务就去执行完所有微任务，然后 再去执行后续的宏任务</p>
+<p>参考资料 <a target="_blank" rel="noopener" href="https://senior-frontend.pages.dev/jsadvanced/asyncpro.html">https://senior-frontend.pages.dev/jsadvanced/asyncpro.html</a></p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://fanghaimao.github.io">mfh</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/">https://fanghaimao.github.io/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/">读后感</a></div><div class="post_share"><div class="social-share" data-image="/assets/cover/logo.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/02/07/%E5%89%8D%E7%AB%AF%E6%8F%90%E5%8D%87%E7%BD%91%E5%9D%80%E6%8E%A8%E8%8D%90/"><img class="next-cover" src="/assets/cover/logo.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">前端提升网址推荐</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/02/07/%E5%89%8D%E7%AB%AF%E6%8F%90%E5%8D%87%E7%BD%91%E5%9D%80%E6%8E%A8%E8%8D%90/" title="前端提升网址推荐"><img class="cover" src="/assets/cover/logo.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-07</div><div class="title">前端提升网址推荐</div></div></a></div><div><a href="/2020/11/20/%E3%80%8A%E4%BD%A0%E4%B8%8D%E7%9F%A5%E9%81%93javascript%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/" title="《你不知道javascript》 知识点摘录"><img class="cover" src="/assets/cover/600299.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-20</div><div class="title">《你不知道javascript》 知识点摘录</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/image/header_avatar.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">mfh</div><div class="author-info__description">前端boys</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A-Event-Loop-%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">JavaScript线程解释 Event Loop 机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Event-Loop-%E6%9C%BA%E5%88%B6"><span class="toc-number"></span> <span class="toc-text">Event Loop 机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84-Event-Loop"><span class="toc-number"></span> <span class="toc-text">浏览器的 Event Loop</span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/" title="JavaScript线程解释"><img src="/assets/cover/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JavaScript线程解释"/></a><div class="content"><a class="title" href="/2023/02/08/JavaScript%E7%BA%BF%E7%A8%8B%E8%A7%A3%E9%87%8A/" title="JavaScript线程解释">JavaScript线程解释</a><time datetime="2023-02-08T02:42:20.000Z" title="Created 2023-02-08 10:42:20">2023-02-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/07/%E5%89%8D%E7%AB%AF%E6%8F%90%E5%8D%87%E7%BD%91%E5%9D%80%E6%8E%A8%E8%8D%90/" title="前端提升网址推荐"><img src="/assets/cover/logo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="前端提升网址推荐"/></a><div class="content"><a class="title" href="/2023/02/07/%E5%89%8D%E7%AB%AF%E6%8F%90%E5%8D%87%E7%BD%91%E5%9D%80%E6%8E%A8%E8%8D%90/" title="前端提升网址推荐">前端提升网址推荐</a><time datetime="2023-02-07T01:44:55.000Z" title="Created 2023-02-07 09:44:55">2023-02-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/11/20/%E3%80%8A%E4%BD%A0%E4%B8%8D%E7%9F%A5%E9%81%93javascript%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/" title="《你不知道javascript》 知识点摘录"><img src="/assets/cover/600299.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="《你不知道javascript》 知识点摘录"/></a><div class="content"><a class="title" href="/2020/11/20/%E3%80%8A%E4%BD%A0%E4%B8%8D%E7%9F%A5%E9%81%93javascript%E3%80%8B%20%E8%AF%BB%E5%90%8E%E6%84%9F/" title="《你不知道javascript》 知识点摘录">《你不知道javascript》 知识点摘录</a><time datetime="2020-11-20T01:44:55.000Z" title="Created 2020-11-20 09:44:55">2020-11-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By mfh</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/kesyoban.model.json"},"display":{"position":"left","width":300,"height":300},"mobile":{"show":false},"log":false});</script></body></html>
